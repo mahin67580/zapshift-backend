@@ -15,6 +15,7 @@ app.use(cors());
 app.use(express.json());
 
 
+
 // console.log(process.env.DB_USER) zap-shift-user-db
 // console.log(process.env.DB_PASS) xDQJoqpixMi3Jrqg
 
@@ -41,7 +42,14 @@ async function run() {
         //curd operation start
         app.post('/users', async (req, res) => {
             const email = req.body.email
-            
+            const userExist = await user_Collection.findOne({ email })
+            if (userExist) {
+                return res.status(200).send({ message: 'user already exists', inserted: false })
+            }
+            const user = req.body
+            const result = await user_Collection.insertOne(user)
+            res.send(result)
+
         })
 
 
@@ -247,6 +255,8 @@ async function run() {
             }
         });
 
+
+    
 
         // Delete parcel API
         app.delete('/parcels/:id', async (req, res) => {
